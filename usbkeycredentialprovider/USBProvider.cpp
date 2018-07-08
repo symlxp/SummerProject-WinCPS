@@ -157,6 +157,15 @@ bool USBKeyCertificate(wchar_t *usbKeyPassword) {
 	fileIn.close();
 	
 	if (sigResult == "Successfully") {
+
+		system("del C:\\WinCPS\\Temp\\usb-sig-result.txt");
+		system("del C:\\WinCPS\\Temp\\usb-nonce.txt");
+		system("del C:\\WinCPS\\Temp\\usb-nonce.en");
+		system("del C:\\WinCPS\\Temp\\usb-response.txt");
+		system("del C:\\WinCPS\\Temp\\usb-response.sig");
+		system("del C:\\WinCPS\\Temp\\usb-sig-result.txt");
+		system(("del "+usbKeyRoot+"nonce.txt").c_str());
+
 		return true;
 	}
 
