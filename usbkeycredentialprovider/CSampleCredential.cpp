@@ -16,7 +16,6 @@
 #include "CSampleCredential.h"
 #include "guid.h"
 
-
 // CSampleCredential ////////////////////////////////////////////////////////
 
 CSampleCredential::CSampleCredential():
@@ -34,6 +33,7 @@ CSampleCredential::~CSampleCredential()
 {
     if (_rgFieldStrings[SFI_PASSWORD])
     {
+        // CoTaskMemFree (below) deals with NULL, but StringCchLength does not.
         size_t lenPassword = lstrlen(_rgFieldStrings[SFI_PASSWORD]);
         SecureZeroMemory(_rgFieldStrings[SFI_PASSWORD], lenPassword * sizeof(*_rgFieldStrings[SFI_PASSWORD]));
     }
@@ -48,32 +48,35 @@ CSampleCredential::~CSampleCredential()
 
 // Initializes one credential with the field information passed in.
 // Set the value of the SFI_USERNAME field to pwzUsername.
+// Optionally takes a password for the SetSerialization case.
 HRESULT CSampleCredential::Initialize(
     __in CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus,
     __in const CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR* rgcpfd,
-    __in const FIELD_STATE_PAIR* rgfsp
+    __in const FIELD_STATE_PAIR* rgfsp,
+    __in PCWSTR pwzUsername,
+    __in PCWSTR pwzPassword
     )
 {
     HRESULT hr = S_OK;
 
     _cpus = cpus;
 
-    // Copy the field descriptors for each field. This is useful if you want to vary the field
-    // descriptors based on what Usage scenario the credential was created for.
+    // Copy the field descriptors for each field. This is useful if you want to vary the 
+    // field descriptors based on what Usage scenario the credential was created for.
     for (DWORD i = 0; SUCCEEDED(hr) && i < ARRAYSIZE(_rgCredProvFieldDescriptors); i++)
     {
         _rgFieldStatePairs[i] = rgfsp[i];
         hr = FieldDescriptorCopy(rgcpfd[i], &_rgCredProvFieldDescriptors[i]);
     }
 
-    // Initialize the String value of all the fields.
+    // Initialize the String values of all the fields.
     if (SUCCEEDED(hr))
     {
-        hr = SHStrDupW(L"Administrator", &_rgFieldStrings[SFI_USERNAME]);
+        hr = SHStrDupW(pwzUsername, &_rgFieldStrings[SFI_USERNAME]);
     }
     if (SUCCEEDED(hr))
     {
-        hr = SHStrDupW(L"", &_rgFieldStrings[SFI_PASSWORD]);
+        hr = SHStrDupW(pwzPassword ? pwzPassword : L"", &_rgFieldStrings[SFI_PASSWORD]);
     }
     if (SUCCEEDED(hr))
     {
@@ -94,7 +97,6 @@ HRESULT CSampleCredential::Advise(
     }
     _pCredProvCredentialEvents = pcpce;
     _pCredProvCredentialEvents->AddRef();
-
     return S_OK;
 }
 
@@ -109,7 +111,7 @@ HRESULT CSampleCredential::UnAdvise()
     return S_OK;
 }
 
-// LogonUI calls this function when our tile is selected (zoomed)
+// LogonUI calls this function when our tile is selected (zoomed).
 // If you simply want fields to show/hide based on the selected state,
 // there's no need to do anything here - you can set that up in the 
 // field definitions.  But if you want to do something
@@ -118,11 +120,12 @@ HRESULT CSampleCredential::UnAdvise()
 HRESULT CSampleCredential::SetSelected(__out BOOL* pbAutoLogon)  
 {
     *pbAutoLogon = FALSE;  
+
     return S_OK;
 }
 
 // Similarly to SetSelected, LogonUI calls this when your tile was selected
-// and now no longer is.  The most common thing to do here (which we do below)
+// and now no longer is. The most common thing to do here (which we do below)
 // is to clear out the password field.
 HRESULT CSampleCredential::SetDeselected()
 {
@@ -143,20 +146,21 @@ HRESULT CSampleCredential::SetDeselected()
     return hr;
 }
 
-// Get info for a particular field of a tile. Called by logonUI to get information to 
+// Gets info for a particular field of a tile. Called by logonUI to get information to 
 // display the tile.
 HRESULT CSampleCredential::GetFieldState(
     __in DWORD dwFieldID,
-    __in CREDENTIAL_PROVIDER_FIELD_STATE* pcpfs,
-    __in CREDENTIAL_PROVIDER_FIELD_INTERACTIVE_STATE* pcpfis
+    __out CREDENTIAL_PROVIDER_FIELD_STATE* pcpfs,
+    __out CREDENTIAL_PROVIDER_FIELD_INTERACTIVE_STATE* pcpfis
     )
 {
     HRESULT hr;
-    
-    if (dwFieldID < ARRAYSIZE(_rgFieldStatePairs) && pcpfs && pcpfis)
+
+    // Validate paramters.
+    if ((dwFieldID < ARRAYSIZE(_rgFieldStatePairs)) && pcpfs && pcpfis)
     {
-        *pcpfis = _rgFieldStatePairs[dwFieldID].cpfis;
         *pcpfs = _rgFieldStatePairs[dwFieldID].cpfs;
+        *pcpfis = _rgFieldStatePairs[dwFieldID].cpfis;
 
         hr = S_OK;
     }
@@ -190,7 +194,7 @@ HRESULT CSampleCredential::GetStringValue(
     return hr;
 }
 
-// Get the image to show in the user tile.
+// Gets the image to show in the user tile.
 HRESULT CSampleCredential::GetBitmapValue(
     __in DWORD dwFieldID, 
     __out HBITMAP* phbmp
@@ -229,10 +233,10 @@ HRESULT CSampleCredential::GetSubmitButtonValue(
 {
     HRESULT hr;
 
-    if (SFI_SUBMIT_BUTTON == dwFieldID && pdwAdjacentTo)
+    // Validate parameters.
+    if ((SFI_SUBMIT_BUTTON == dwFieldID) && pdwAdjacentTo)
     {
-        // pdwAdjacentTo is a pointer to the fieldID you want the submit button to 
-        // appear next to.
+        // pdwAdjacentTo is a pointer to the fieldID you want the submit button to appear next to.
         *pdwAdjacentTo = SFI_PASSWORD;
         hr = S_OK;
     }
@@ -244,7 +248,7 @@ HRESULT CSampleCredential::GetSubmitButtonValue(
 }
 
 // Sets the value of a field which can accept a string as a value.
-// This is called on each keystroke when a user types into an edit field
+// This is called on each keystroke when a user types into an edit field.
 HRESULT CSampleCredential::SetStringValue(
     __in DWORD dwFieldID, 
     __in PCWSTR pwz      
@@ -252,13 +256,13 @@ HRESULT CSampleCredential::SetStringValue(
 {
     HRESULT hr;
 
+    // Validate parameters.
     if (dwFieldID < ARRAYSIZE(_rgCredProvFieldDescriptors) && 
        (CPFT_EDIT_TEXT == _rgCredProvFieldDescriptors[dwFieldID].cpft || 
         CPFT_PASSWORD_TEXT == _rgCredProvFieldDescriptors[dwFieldID].cpft)) 
     {
         PWSTR* ppwszStored = &_rgFieldStrings[dwFieldID];
         CoTaskMemFree(*ppwszStored);
-
         hr = SHStrDupW(pwz, ppwszStored);
     }
     else
@@ -350,9 +354,6 @@ HRESULT CSampleCredential::GetSerialization(
 {
     UNREFERENCED_PARAMETER(ppwszOptionalStatusText);
     UNREFERENCED_PARAMETER(pcpsiOptionalStatusIcon);
-
-    KERB_INTERACTIVE_LOGON kil;
-    ZeroMemory(&kil, sizeof(kil));
 
     HRESULT hr;
 

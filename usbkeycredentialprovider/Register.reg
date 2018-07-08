@@ -1,12 +1,12 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{75A22DF0-B81D-46ed-B119-CD30507BD615}]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{5D843762-5DFA-409E-B57E-7E2E474210D5}]
 @="USBKeyCredentialProvider"
 
-[HKEY_CLASSES_ROOT\CLSID\{75A22DF0-B81D-46ed-B119-CD30507BD615}]
+[HKEY_CLASSES_ROOT\CLSID\{5D843762-5DFA-409E-B57E-7E2E474210D5}]
 @="USBKeyCredentialProvider"
 
-[HKEY_CLASSES_ROOT\CLSID\{75A22DF0-B81D-46ed-B119-CD30507BD615}\InprocServer32]
+[HKEY_CLASSES_ROOT\CLSID\{5D843762-5DFA-409E-B57E-7E2E474210D5}\InprocServer32]
 @="USBKeyCredentialProvider.dll"
 "ThreadingModel"="Apartment"
 
