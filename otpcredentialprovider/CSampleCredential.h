@@ -19,6 +19,7 @@
 #include "common.h"
 #include "dll.h"
 #include "resource.h"
+#include "OTPProvider.h"
 
 class CSampleCredential : public ICredentialProviderCredential
 {
@@ -108,6 +109,7 @@ class CSampleCredential : public ICredentialProviderCredential
                                                                                        // different from the name of 
                                                                                        // the field held in 
                                                                                        // _rgCredProvFieldDescriptors.
-    ICredentialProviderCredentialEvents* _pCredProvCredentialEvents;                  
+    ICredentialProviderCredentialEvents* _pCredProvCredentialEvents;       
+	int										randNumForOTP;								//Rand number to generate OTP PIN.
 
 };

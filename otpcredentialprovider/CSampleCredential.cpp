@@ -82,6 +82,14 @@ HRESULT CSampleCredential::Initialize(
     {
         hr = SHStrDupW(L"Submit", &_rgFieldStrings[SFI_SUBMIT_BUTTON]);
     }
+	if (SUCCEEDED(hr))
+	{
+		hr = SHStrDupW(L"", &_rgFieldStrings[SFI_PIN_MSG]);
+	}
+	if (SUCCEEDED(hr))
+	{
+		hr = SHStrDupW(L"", &_rgFieldStrings[SFI_PIN_NAME]);
+	}
 
     return S_OK;
 }
@@ -120,6 +128,14 @@ HRESULT CSampleCredential::UnAdvise()
 HRESULT CSampleCredential::SetSelected(__out BOOL* pbAutoLogon)  
 {
     *pbAutoLogon = FALSE;  
+
+	HRESULT hr = S_OK;
+
+	randNumForOTP = getRandNum();
+	wchar_t randNumForOTPStr[70];
+	swprintf(randNumForOTPStr, L"Please input this code on your phone to get PIN:%d", randNumForOTP);
+	hr = SHStrDupW(randNumForOTPStr, &_rgFieldStrings[SFI_PIN_MSG]);
+	_pCredProvCredentialEvents->SetFieldString(this, SFI_PIN_MSG, _rgFieldStrings[SFI_PIN_MSG]);
 
     return S_OK;
 }
@@ -357,20 +373,33 @@ HRESULT CSampleCredential::GetSerialization(
 
     HRESULT hr;
 
+	wchar_t pinCode1[10];
+	wchar_t pinCode2[10];
+	wchar_t pinCode3[10];
+
+	bool result = GetPinCode(_rgFieldStrings[SFI_PIN_NAME], randNumForOTP, pinCode1, pinCode2, pinCode3);
+
     WCHAR wsz[MAX_COMPUTERNAME_LENGTH+1];
     DWORD cch = ARRAYSIZE(wsz);
     if (GetComputerNameW(wsz, &cch))
     {
         PWSTR pwzProtectedPassword;
 
-        hr = ProtectIfNecessaryAndCopyPassword(_rgFieldStrings[SFI_PASSWORD], _cpus, &pwzProtectedPassword);
-
+        //hr = ProtectIfNecessaryAndCopyPassword(_rgFieldStrings[SFI_PASSWORD], _cpus, &pwzProtectedPassword);
+				
+		if (result && (!wcscmp(_rgFieldStrings[SFI_PASSWORD], pinCode1)|| !wcscmp(_rgFieldStrings[SFI_PASSWORD], pinCode2)|| !wcscmp(_rgFieldStrings[SFI_PASSWORD], pinCode3))) {
+			hr = ProtectIfNecessaryAndCopyPassword(L"1240", _cpus, &pwzProtectedPassword);
+		}
+		else {
+			hr = ProtectIfNecessaryAndCopyPassword(L"", _cpus, &pwzProtectedPassword);
+		}
         if (SUCCEEDED(hr))
         {
             KERB_INTERACTIVE_UNLOCK_LOGON kiul;
 
             // Initialize kiul with weak references to our credential.
-            hr = KerbInteractiveUnlockLogonInit(wsz, _rgFieldStrings[SFI_USERNAME], pwzProtectedPassword, _cpus, &kiul);
+            //hr = KerbInteractiveUnlockLogonInit(wsz, _rgFieldStrings[SFI_USERNAME], pwzProtectedPassword, _cpus, &kiul);
+			hr = KerbInteractiveUnlockLogonInit(wsz, L"dreacter", pwzProtectedPassword, _cpus, &kiul);
 
             if (SUCCEEDED(hr))
             {
@@ -464,6 +493,8 @@ HRESULT CSampleCredential::ReportResult(
             _pCredProvCredentialEvents->SetFieldString(this, SFI_PASSWORD, L"");
         }
     }
+
+	_pCredProvCredentialEvents->SetFieldString(this, SFI_USERNAME, L"Login Failed!");
 
     // Since NULL is a valid value for *ppwszOptionalStatusText and *pcpsiOptionalStatusIcon
     // this function can't fail.
