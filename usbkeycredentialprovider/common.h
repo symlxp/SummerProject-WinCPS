@@ -18,9 +18,10 @@ enum SAMPLE_FIELD_ID
 {
     SFI_TILEIMAGE       = 0,
     SFI_USERNAME        = 1,
-    SFI_PASSWORD        = 2,
-    SFI_SUBMIT_BUTTON   = 3, 
-    SFI_NUM_FIELDS      = 4,  // Note: if new fields are added, keep NUM_FIELDS last.  This is used as a count of the number of fields
+	SFI_USBKEY_MSG		= 2,
+    SFI_PASSWORD        = 3,
+    SFI_SUBMIT_BUTTON   = 4, 
+    SFI_NUM_FIELDS      = 5,  // Note: if new fields are added, keep NUM_FIELDS last.  This is used as a count of the number of fields
 };
 
 // The first value indicates when the tile is displayed (selected, not selected)
@@ -42,6 +43,7 @@ static const FIELD_STATE_PAIR s_rgFieldStatePairs[] =
 {
     { CPFS_DISPLAY_IN_BOTH, CPFIS_NONE },                   // SFI_TILEIMAGE
     { CPFS_DISPLAY_IN_BOTH, CPFIS_NONE },                   // SFI_USERNAME
+	{ CPFS_DISPLAY_IN_SELECTED_TILE, CPFIS_NONE },
     { CPFS_DISPLAY_IN_SELECTED_TILE, CPFIS_FOCUSED },       // SFI_PASSWORD
     { CPFS_DISPLAY_IN_SELECTED_TILE, CPFIS_NONE    },       // SFI_SUBMIT_BUTTON   
 };
@@ -54,6 +56,7 @@ static const CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR s_rgCredProvFieldDescriptors[]
 {
     { SFI_TILEIMAGE, CPFT_TILE_IMAGE, L"Image" },
     { SFI_USERNAME, CPFT_LARGE_TEXT, L"Username" },
+	{ SFI_USBKEY_MSG, CPFT_SMALL_TEXT, L"USBKeyMessage"},
     { SFI_PASSWORD, CPFT_PASSWORD_TEXT, L"Password" },
     { SFI_SUBMIT_BUTTON, CPFT_SUBMIT_BUTTON, L"Submit" },
 };

@@ -19,6 +19,7 @@
 #include "common.h"
 #include "dll.h"
 #include "resource.h"
+#include "USBProvider.h"
 
 class CSampleCredential : public ICredentialProviderCredential
 {

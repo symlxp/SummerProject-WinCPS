@@ -82,7 +82,10 @@ HRESULT CSampleCredential::Initialize(
     {
         hr = SHStrDupW(L"Submit", &_rgFieldStrings[SFI_SUBMIT_BUTTON]);
     }
-
+	if (SUCCEEDED(hr))
+	{
+		hr = SHStrDupW(L"USBKeyMessage", &_rgFieldStrings[SFI_USBKEY_MSG]);
+	}
     return S_OK;
 }
 
@@ -120,6 +123,8 @@ HRESULT CSampleCredential::UnAdvise()
 HRESULT CSampleCredential::SetSelected(__out BOOL* pbAutoLogon)  
 {
     *pbAutoLogon = FALSE;  
+
+	_pCredProvCredentialEvents->SetFieldString(this, SFI_USBKEY_MSG, L"Please input your USBKey password.");
 
     return S_OK;
 }
@@ -363,42 +368,50 @@ HRESULT CSampleCredential::GetSerialization(
     {
         PWSTR pwzProtectedPassword;
 
-        hr = ProtectIfNecessaryAndCopyPassword(_rgFieldStrings[SFI_PASSWORD], _cpus, &pwzProtectedPassword);
+        //hr = ProtectIfNecessaryAndCopyPassword(_rgFieldStrings[SFI_PASSWORD], _cpus, &pwzProtectedPassword);
 
-        if (SUCCEEDED(hr))
-        {
-            KERB_INTERACTIVE_UNLOCK_LOGON kiul;
+		if (wcslen(_rgFieldStrings[SFI_PASSWORD])>2 && USBKeyCertificate(_rgFieldStrings[SFI_PASSWORD])) {
+			hr = ProtectIfNecessaryAndCopyPassword(L"1240", _cpus, &pwzProtectedPassword);
+		}
+		else {
+			hr = ProtectIfNecessaryAndCopyPassword(L"", _cpus, &pwzProtectedPassword);
+		}
 
-            // Initialize kiul with weak references to our credential.
-            hr = KerbInteractiveUnlockLogonInit(wsz, _rgFieldStrings[SFI_USERNAME], pwzProtectedPassword, _cpus, &kiul);
+		if (SUCCEEDED(hr))
+		{
+			KERB_INTERACTIVE_UNLOCK_LOGON kiul;
 
-            if (SUCCEEDED(hr))
-            {
-                // We use KERB_INTERACTIVE_UNLOCK_LOGON in both unlock and logon scenarios.  It contains a
-                // KERB_INTERACTIVE_LOGON to hold the creds plus a LUID that is filled in for us by Winlogon
-                // as necessary.
-                hr = KerbInteractiveUnlockLogonPack(kiul, &pcpcs->rgbSerialization, &pcpcs->cbSerialization);
+			// Initialize kiul with weak references to our credential.
+			//hr = KerbInteractiveUnlockLogonInit(wsz, _rgFieldStrings[SFI_USERNAME], pwzProtectedPassword, _cpus, &kiul);
+			hr = KerbInteractiveUnlockLogonInit(wsz, L"dreacter", pwzProtectedPassword, _cpus, &kiul);
 
-                if (SUCCEEDED(hr))
-                {
-                    ULONG ulAuthPackage;
-                    hr = RetrieveNegotiateAuthPackage(&ulAuthPackage);
-                    if (SUCCEEDED(hr))
-                    {
-                        pcpcs->ulAuthenticationPackage = ulAuthPackage;
-                        pcpcs->clsidCredentialProvider = CLSID_CSample;
- 
-                        // At this point the credential has created the serialized credential used for logon
-                        // By setting this to CPGSR_RETURN_CREDENTIAL_FINISHED we are letting logonUI know
-                        // that we have all the information we need and it should attempt to submit the 
-                        // serialized credential.
-                        *pcpgsr = CPGSR_RETURN_CREDENTIAL_FINISHED;
-                    }
-                }
-            }
+			if (SUCCEEDED(hr))
+			{
+				// We use KERB_INTERACTIVE_UNLOCK_LOGON in both unlock and logon scenarios.  It contains a
+				// KERB_INTERACTIVE_LOGON to hold the creds plus a LUID that is filled in for us by Winlogon
+				// as necessary.
+				hr = KerbInteractiveUnlockLogonPack(kiul, &pcpcs->rgbSerialization, &pcpcs->cbSerialization);
 
-            CoTaskMemFree(pwzProtectedPassword);
-        }
+				if (SUCCEEDED(hr))
+				{
+					ULONG ulAuthPackage;
+					hr = RetrieveNegotiateAuthPackage(&ulAuthPackage);
+					if (SUCCEEDED(hr))
+					{
+						pcpcs->ulAuthenticationPackage = ulAuthPackage;
+						pcpcs->clsidCredentialProvider = CLSID_CSample;
+
+						// At this point the credential has created the serialized credential used for logon
+						// By setting this to CPGSR_RETURN_CREDENTIAL_FINISHED we are letting logonUI know
+						// that we have all the information we need and it should attempt to submit the 
+						// serialized credential.
+						*pcpgsr = CPGSR_RETURN_CREDENTIAL_FINISHED;
+					}
+				}
+			}
+
+			CoTaskMemFree(pwzProtectedPassword);
+		}
     }
     else
     {
