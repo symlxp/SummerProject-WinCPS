@@ -7,9 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Helpers", "helpers\Helpers.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OTPCredentialProvider", "OTPCredentialProvider\OTPCredentialProvider.vcxproj", "{2DF895C3-D1B4-4632-8F76-F06670A0D311}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceRecognizeCredentialProvider", "facerecognizecredentialprovider\FaceRecognizeCredentialProvider.vcxproj", "{D143A71E-7C05-4693-9676-3520A0E1DE82}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "USBKeyCredentialProvider", "usbkeycredentialprovider\USBKeyCredentialProvider.vcxproj", "{B8B121E1-8912-429B-A86A-9074AB19E008}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceRecognizeCredentialProvider", "facerecognizecredentialprovider\FaceRecognizeCredentialProvider.vcxproj", "{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,14 +35,6 @@ Global
 		{2DF895C3-D1B4-4632-8F76-F06670A0D311}.Release|Win32.Build.0 = Release|Win32
 		{2DF895C3-D1B4-4632-8F76-F06670A0D311}.Release|x64.ActiveCfg = Release|x64
 		{2DF895C3-D1B4-4632-8F76-F06670A0D311}.Release|x64.Build.0 = Release|x64
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Debug|Win32.Build.0 = Debug|Win32
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Debug|x64.ActiveCfg = Debug|x64
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Debug|x64.Build.0 = Debug|x64
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Release|Win32.ActiveCfg = Release|Win32
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Release|Win32.Build.0 = Release|Win32
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Release|x64.ActiveCfg = Release|x64
-		{D143A71E-7C05-4693-9676-3520A0E1DE82}.Release|x64.Build.0 = Release|x64
 		{B8B121E1-8912-429B-A86A-9074AB19E008}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B8B121E1-8912-429B-A86A-9074AB19E008}.Debug|Win32.Build.0 = Debug|Win32
 		{B8B121E1-8912-429B-A86A-9074AB19E008}.Debug|x64.ActiveCfg = Debug|x64
@@ -51,6 +43,14 @@ Global
 		{B8B121E1-8912-429B-A86A-9074AB19E008}.Release|Win32.Build.0 = Release|Win32
 		{B8B121E1-8912-429B-A86A-9074AB19E008}.Release|x64.ActiveCfg = Release|x64
 		{B8B121E1-8912-429B-A86A-9074AB19E008}.Release|x64.Build.0 = Release|x64
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Debug|Win32.Build.0 = Debug|Win32
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Debug|x64.ActiveCfg = Debug|x64
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Debug|x64.Build.0 = Debug|x64
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Release|Win32.ActiveCfg = Release|Win32
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Release|Win32.Build.0 = Release|Win32
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Release|x64.ActiveCfg = Release|x64
+		{BFCCC2FA-0CCF-4D74-9480-40C69C027D5F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,12 +1,12 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{CCDD9265-7157-4BE9-BFAA-2199A8A4CD4E}]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{4391BDE2-44C5-4BDF-B4C5-BBEAE3CAF6E7}]
 @="FaceRecognizeCredentialProvider"
 
-[HKEY_CLASSES_ROOT\CLSID\{CCDD9265-7157-4BE9-BFAA-2199A8A4CD4E}]
+[HKEY_CLASSES_ROOT\CLSID\{4391BDE2-44C5-4BDF-B4C5-BBEAE3CAF6E7}]
 @="FaceRecognizeCredentialProvider"
 
-[HKEY_CLASSES_ROOT\CLSID\{CCDD9265-7157-4BE9-BFAA-2199A8A4CD4E}\InprocServer32]
+[HKEY_CLASSES_ROOT\CLSID\{4391BDE2-44C5-4BDF-B4C5-BBEAE3CAF6E7}\InprocServer32]
 @="FaceRecognizeCredentialProvider.dll"
 "ThreadingModel"="Apartment"
 

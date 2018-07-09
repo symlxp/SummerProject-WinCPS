@@ -7,21 +7,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 
-#pragma once
-
 #include <credentialprovider.h>
 #include <windows.h>
 #include <strsafe.h>
 
-#include "CommandWindow.h"
 #include "CSampleCredential.h"
-#include "MessageCredential.h"
-#include "helpers.h"
+#include <helpers.h>
 
-// Forward references for classes used here.
-class CCommandWindow;
-class CSampleCredential;
-class CMessageCredential;
+#define MAX_CREDENTIALS 3
+#define MAX_DWORD   0xffffffff        // maximum DWORD
 
 class CSampleProvider : public ICredentialProvider
 {
@@ -70,20 +64,29 @@ class CSampleProvider : public ICredentialProvider
 
     friend HRESULT CSample_CreateInstance(__in REFIID riid, __deref_out void** ppv);
 
-public:
-    void OnConnectStatusChanged();
-
   protected:
     CSampleProvider();
     __override ~CSampleProvider();
     
+  private:
+    
+    HRESULT _EnumerateOneCredential(__in DWORD dwCredientialIndex,
+                                    __in PCWSTR pwzUsername);
+    HRESULT _EnumerateSetSerialization();
+
+    // Create/free enumerated credentials.
+    HRESULT _EnumerateCredentials();
+    void _ReleaseEnumeratedCredentials();
+    void _CleanupSetSerialization();
+
+
 private:
-    CCommandWindow              *_pCommandWindow;       // Emulates external events.
-    LONG                        _cRef;                  // Reference counter.
-    CSampleCredential           *_pCredential;          // Our "connected" credential.
-    CMessageCredential          *_pMessageCredential;   // Our "disconnected" credential.
-    ICredentialProviderEvents   *_pcpe;                    // Used to tell our owner to re-enumerate credentials.
-    UINT_PTR                    _upAdviseContext;       // Used to tell our owner who we are when asking to 
-                                                        // re-enumerate credentials.
+    LONG              _cRef;
+    CSampleCredential *_rgpCredentials[MAX_CREDENTIALS];  // Pointers to the credentials which will be enumerated by 
+                                                          // this Provider.
+    DWORD                                   _dwNumCreds;
+    KERB_INTERACTIVE_UNLOCK_LOGON*          _pkiulSetSerialization;
+    DWORD                                   _dwSetSerializationCred; //index into rgpCredentials for the SetSerializationCred
+    bool                                    _bAutoSubmitSetSerializationCred;
     CREDENTIAL_PROVIDER_USAGE_SCENARIO      _cpus;
 };
