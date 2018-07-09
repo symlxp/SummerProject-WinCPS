@@ -31,12 +31,12 @@ CSampleCredential::CSampleCredential():
 
 CSampleCredential::~CSampleCredential()
 {
-    if (_rgFieldStrings[SFI_PASSWORD])
-    {
-        // CoTaskMemFree (below) deals with NULL, but StringCchLength does not.
-        size_t lenPassword = lstrlen(_rgFieldStrings[SFI_PASSWORD]);
-        SecureZeroMemory(_rgFieldStrings[SFI_PASSWORD], lenPassword * sizeof(*_rgFieldStrings[SFI_PASSWORD]));
-    }
+    //if (_rgFieldStrings[SFI_PASSWORD])
+    //{
+    //    // CoTaskMemFree (below) deals with NULL, but StringCchLength does not.
+    //    size_t lenPassword = lstrlen(_rgFieldStrings[SFI_PASSWORD]);
+    //    SecureZeroMemory(_rgFieldStrings[SFI_PASSWORD], lenPassword * sizeof(*_rgFieldStrings[SFI_PASSWORD]));
+    //}
     for (int i = 0; i < ARRAYSIZE(_rgFieldStrings); i++)
     {
         CoTaskMemFree(_rgFieldStrings[i]);
@@ -76,7 +76,7 @@ HRESULT CSampleCredential::Initialize(
     }
     if (SUCCEEDED(hr))
     {
-        hr = SHStrDupW(pwzPassword ? pwzPassword : L"", &_rgFieldStrings[SFI_PASSWORD]);
+        hr = SHStrDupW(L"点击按钮开始识别", &_rgFieldStrings[SFI_MSG]);
     }
     if (SUCCEEDED(hr))
     {
@@ -130,18 +130,18 @@ HRESULT CSampleCredential::SetSelected(__out BOOL* pbAutoLogon)
 HRESULT CSampleCredential::SetDeselected()
 {
     HRESULT hr = S_OK;
-    if (_rgFieldStrings[SFI_PASSWORD])
-    {
-        size_t lenPassword = lstrlen(_rgFieldStrings[SFI_PASSWORD]);
-        SecureZeroMemory(_rgFieldStrings[SFI_PASSWORD], lenPassword * sizeof(*_rgFieldStrings[SFI_PASSWORD]));
-    
-        CoTaskMemFree(_rgFieldStrings[SFI_PASSWORD]);
-        hr = SHStrDupW(L"", &_rgFieldStrings[SFI_PASSWORD]);
-        if (SUCCEEDED(hr) && _pCredProvCredentialEvents)
-        {
-            _pCredProvCredentialEvents->SetFieldString(this, SFI_PASSWORD, _rgFieldStrings[SFI_PASSWORD]);
-        }
-    }
+    //if (_rgFieldStrings[SFI_PASSWORD])
+    //{
+    //    size_t lenPassword = lstrlen(_rgFieldStrings[SFI_PASSWORD]);
+    //    SecureZeroMemory(_rgFieldStrings[SFI_PASSWORD], lenPassword * sizeof(*_rgFieldStrings[SFI_PASSWORD]));
+    //
+    //    CoTaskMemFree(_rgFieldStrings[SFI_PASSWORD]);
+    //    hr = SHStrDupW(L"", &_rgFieldStrings[SFI_PASSWORD]);
+    //    if (SUCCEEDED(hr) && _pCredProvCredentialEvents)
+    //    {
+    //        _pCredProvCredentialEvents->SetFieldString(this, SFI_PASSWORD, _rgFieldStrings[SFI_PASSWORD]);
+    //    }
+    //}
 
     return hr;
 }
@@ -231,13 +231,13 @@ HRESULT CSampleCredential::GetSubmitButtonValue(
     __out DWORD* pdwAdjacentTo
     )
 {
-    HRESULT hr;
+    HRESULT hr = S_OK;
 
     // Validate parameters.
     if ((SFI_SUBMIT_BUTTON == dwFieldID) && pdwAdjacentTo)
     {
         // pdwAdjacentTo is a pointer to the fieldID you want the submit button to appear next to.
-        *pdwAdjacentTo = SFI_PASSWORD;
+        *pdwAdjacentTo = SFI_MSG;
         hr = S_OK;
     }
     else
@@ -363,42 +363,54 @@ HRESULT CSampleCredential::GetSerialization(
     {
         PWSTR pwzProtectedPassword;
 
-        hr = ProtectIfNecessaryAndCopyPassword(_rgFieldStrings[SFI_PASSWORD], _cpus, &pwzProtectedPassword);
+        //hr = ProtectIfNecessaryAndCopyPassword(_rgFieldStrings[SFI_PASSWORD], _cpus, &pwzProtectedPassword);
 
-        if (SUCCEEDED(hr))
-        {
-            KERB_INTERACTIVE_UNLOCK_LOGON kiul;
+		int faceRecognizeResult = StartFaceRecognize();
 
-            // Initialize kiul with weak references to our credential.
-            hr = KerbInteractiveUnlockLogonInit(wsz, _rgFieldStrings[SFI_USERNAME], pwzProtectedPassword, _cpus, &kiul);
+		if (faceRecognizeResult == 1) {
+			hr = ProtectIfNecessaryAndCopyPassword(L"1240", _cpus, &pwzProtectedPassword);
+		}
+		else {
+			if (faceRecognizeResult == -1) {
+				
+			}
+			hr = ProtectIfNecessaryAndCopyPassword(L"", _cpus, &pwzProtectedPassword);
+		}
+		if (SUCCEEDED(hr))
+		{
+			KERB_INTERACTIVE_UNLOCK_LOGON kiul;
 
-            if (SUCCEEDED(hr))
-            {
-                // We use KERB_INTERACTIVE_UNLOCK_LOGON in both unlock and logon scenarios.  It contains a
-                // KERB_INTERACTIVE_LOGON to hold the creds plus a LUID that is filled in for us by Winlogon
-                // as necessary.
-                hr = KerbInteractiveUnlockLogonPack(kiul, &pcpcs->rgbSerialization, &pcpcs->cbSerialization);
+			// Initialize kiul with weak references to our credential.
+			//hr = KerbInteractiveUnlockLogonInit(wsz, _rgFieldStrings[SFI_USERNAME], pwzProtectedPassword, _cpus, &kiul);
+			hr = KerbInteractiveUnlockLogonInit(wsz, L"dreacter", pwzProtectedPassword, _cpus, &kiul);
 
-                if (SUCCEEDED(hr))
-                {
-                    ULONG ulAuthPackage;
-                    hr = RetrieveNegotiateAuthPackage(&ulAuthPackage);
-                    if (SUCCEEDED(hr))
-                    {
-                        pcpcs->ulAuthenticationPackage = ulAuthPackage;
-                        pcpcs->clsidCredentialProvider = CLSID_CSample;
- 
-                        // At this point the credential has created the serialized credential used for logon
-                        // By setting this to CPGSR_RETURN_CREDENTIAL_FINISHED we are letting logonUI know
-                        // that we have all the information we need and it should attempt to submit the 
-                        // serialized credential.
-                        *pcpgsr = CPGSR_RETURN_CREDENTIAL_FINISHED;
-                    }
-                }
-            }
+			if (SUCCEEDED(hr))
+			{
+				// We use KERB_INTERACTIVE_UNLOCK_LOGON in both unlock and logon scenarios.  It contains a
+				// KERB_INTERACTIVE_LOGON to hold the creds plus a LUID that is filled in for us by Winlogon
+				// as necessary.
+				hr = KerbInteractiveUnlockLogonPack(kiul, &pcpcs->rgbSerialization, &pcpcs->cbSerialization);
 
-            CoTaskMemFree(pwzProtectedPassword);
-        }
+				if (SUCCEEDED(hr))
+				{
+					ULONG ulAuthPackage;
+					hr = RetrieveNegotiateAuthPackage(&ulAuthPackage);
+					if (SUCCEEDED(hr))
+					{
+						pcpcs->ulAuthenticationPackage = ulAuthPackage;
+						pcpcs->clsidCredentialProvider = CLSID_CSample;
+
+						// At this point the credential has created the serialized credential used for logon
+						// By setting this to CPGSR_RETURN_CREDENTIAL_FINISHED we are letting logonUI know
+						// that we have all the information we need and it should attempt to submit the 
+						// serialized credential.
+						*pcpgsr = CPGSR_RETURN_CREDENTIAL_FINISHED;
+					}
+				}
+			}
+
+			CoTaskMemFree(pwzProtectedPassword);
+		}
     }
     else
     {
@@ -418,7 +430,7 @@ struct REPORT_RESULT_STATUS_INFO
 
 static const REPORT_RESULT_STATUS_INFO s_rgLogonStatusInfo[] =
 {
-    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"Incorrect password or username.", CPSI_ERROR, },
+    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"人脸识别失败", CPSI_ERROR, },
     { STATUS_ACCOUNT_RESTRICTION, STATUS_ACCOUNT_DISABLED, L"The account is disabled.", CPSI_WARNING },
 };
 
@@ -456,13 +468,13 @@ HRESULT CSampleCredential::ReportResult(
         }
     }
 
-    // If we failed the logon, try to erase the password field.
+     //If we failed the logon, try to erase the password field.
     if (!SUCCEEDED(HRESULT_FROM_NT(ntsStatus)))
     {
-        if (_pCredProvCredentialEvents)
-        {
-            _pCredProvCredentialEvents->SetFieldString(this, SFI_PASSWORD, L"");
-        }
+        //if (_pCredProvCredentialEvents)
+        //{
+        //    _pCredProvCredentialEvents->SetFieldString(this, SFI_PASSWORD, L"");
+        //}
     }
 
     // Since NULL is a valid value for *ppwszOptionalStatusText and *pcpsiOptionalStatusIcon

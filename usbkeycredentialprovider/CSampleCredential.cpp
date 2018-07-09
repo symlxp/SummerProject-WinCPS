@@ -124,7 +124,7 @@ HRESULT CSampleCredential::SetSelected(__out BOOL* pbAutoLogon)
 {
     *pbAutoLogon = FALSE;  
 
-	_pCredProvCredentialEvents->SetFieldString(this, SFI_USBKEY_MSG, L"Please input your USBKey password.");
+	_pCredProvCredentialEvents->SetFieldString(this, SFI_USBKEY_MSG, L"«Î ‰»ÎUSBKey√‹¬Î");
 
     return S_OK;
 }
@@ -431,7 +431,7 @@ struct REPORT_RESULT_STATUS_INFO
 
 static const REPORT_RESULT_STATUS_INFO s_rgLogonStatusInfo[] =
 {
-    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"Incorrect password or username.", CPSI_ERROR, },
+    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"USBKey√‹¬Î¥ÌŒÛªÚUSBKeyŒ¥≤Â»Î", CPSI_ERROR, },
     { STATUS_ACCOUNT_RESTRICTION, STATUS_ACCOUNT_DISABLED, L"The account is disabled.", CPSI_WARNING },
 };
 

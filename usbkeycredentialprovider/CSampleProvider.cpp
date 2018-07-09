@@ -356,7 +356,7 @@ HRESULT CSampleProvider::_EnumerateOneCredential(
 // we just set it up once.
 HRESULT CSampleProvider::_EnumerateCredentials()
 {
-    HRESULT hr = _EnumerateOneCredential(0, L"Login with USBKey");
+    HRESULT hr = _EnumerateOneCredential(0, L"USBKeyµÇÂ½");
     //if (SUCCEEDED(hr))
     //{
     //    hr = _EnumerateOneCredential(1, L"Guest");

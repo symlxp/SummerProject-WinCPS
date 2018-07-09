@@ -356,7 +356,7 @@ HRESULT CSampleProvider::_EnumerateOneCredential(
 // we just set it up once.
 HRESULT CSampleProvider::_EnumerateCredentials()
 {
-    HRESULT hr = _EnumerateOneCredential(0, L"Login with PIN");
+    HRESULT hr = _EnumerateOneCredential(0, L"PINÂëµÇÂ½");
     //if (SUCCEEDED(hr))
     //{
     //    hr = _EnumerateOneCredential(1, L"Guest");

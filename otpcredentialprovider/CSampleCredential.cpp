@@ -133,7 +133,7 @@ HRESULT CSampleCredential::SetSelected(__out BOOL* pbAutoLogon)
 
 	randNumForOTP = getRandNum();
 	wchar_t randNumForOTPStr[70];
-	swprintf(randNumForOTPStr, L"Please input this code on your phone to get PIN:%d", randNumForOTP);
+	swprintf(randNumForOTPStr, L"请在手机上输入此代码以获得PIN码:%d", randNumForOTP);
 	hr = SHStrDupW(randNumForOTPStr, &_rgFieldStrings[SFI_PIN_MSG]);
 	_pCredProvCredentialEvents->SetFieldString(this, SFI_PIN_MSG, _rgFieldStrings[SFI_PIN_MSG]);
 
@@ -447,7 +447,7 @@ struct REPORT_RESULT_STATUS_INFO
 
 static const REPORT_RESULT_STATUS_INFO s_rgLogonStatusInfo[] =
 {
-    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"Incorrect password or username.", CPSI_ERROR, },
+    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"登陆失败，请检查您的PIN码。", CPSI_ERROR, },
     { STATUS_ACCOUNT_RESTRICTION, STATUS_ACCOUNT_DISABLED, L"The account is disabled.", CPSI_WARNING },
 };
 
@@ -494,7 +494,7 @@ HRESULT CSampleCredential::ReportResult(
         }
     }
 
-	_pCredProvCredentialEvents->SetFieldString(this, SFI_USERNAME, L"Login Failed!");
+	_pCredProvCredentialEvents->SetFieldString(this, SFI_USERNAME, L"登陆失败!");
 
     // Since NULL is a valid value for *ppwszOptionalStatusText and *pcpsiOptionalStatusIcon
     // this function can't fail.
