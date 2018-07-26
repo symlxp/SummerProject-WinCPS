@@ -1,4 +1,4 @@
-//
+ï»¿//
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -356,7 +356,7 @@ HRESULT CSampleProvider::_EnumerateOneCredential(
 // we just set it up once.
 HRESULT CSampleProvider::_EnumerateCredentials()
 {
-    HRESULT hr = _EnumerateOneCredential(0, L"ÈËÁ³Ê¶±ğµÇÂ½");
+    HRESULT hr = _EnumerateOneCredential(0, L"ç”Ÿç‰©ç‰¹å¾è¯†åˆ«ç™»é™†");
     //if (SUCCEEDED(hr))
     //{
     //    hr = _EnumerateOneCredential(1, L"Guest");

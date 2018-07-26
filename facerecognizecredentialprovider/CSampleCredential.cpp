@@ -1,4 +1,4 @@
-//
+ï»¿//
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -76,7 +76,7 @@ HRESULT CSampleCredential::Initialize(
     }
     if (SUCCEEDED(hr))
     {
-        hr = SHStrDupW(L"µã»÷°´Å¥¿ªÊ¼Ê¶±ð", &_rgFieldStrings[SFI_MSG]);
+        hr = SHStrDupW(L"ç‚¹å‡»æŒ‰é’®å¼€å§‹è¯†åˆ«", &_rgFieldStrings[SFI_MSG]);
     }
     if (SUCCEEDED(hr))
     {
@@ -430,7 +430,7 @@ struct REPORT_RESULT_STATUS_INFO
 
 static const REPORT_RESULT_STATUS_INFO s_rgLogonStatusInfo[] =
 {
-    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"ÈËÁ³Ê¶±ðÊ§°Ü", CPSI_ERROR, },
+    { STATUS_LOGON_FAILURE, STATUS_SUCCESS, L"è¯†åˆ«å¤±è´¥", CPSI_ERROR, },
     { STATUS_ACCOUNT_RESTRICTION, STATUS_ACCOUNT_DISABLED, L"The account is disabled.", CPSI_WARNING },
 };
 
